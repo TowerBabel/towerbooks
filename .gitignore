@@ -43,5 +43,3 @@ nosetests.xml
 COMPILED
 media
 *~
-
-local_settings.py
