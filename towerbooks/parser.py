@@ -2,6 +2,8 @@ from __future__ import with_statement
 import importlib
 import re
 
+from lxml import etree
+
 from . import exceptions
 from . import models
 
@@ -91,10 +93,12 @@ class BookParser(NestedParser):
         while True:
             try:
                 data = _file.read(self.BUFFER_SIZE)
+                self._file = _file
             except AttributeError as ae1:
                 try:
                     with open(_file, 'rb') as f:
                         data = f.read(self.BUFFER_SIZE)
+                        self._file = f
                 except IOError as io1:
                     raise exceptions.InvalidFile("The file {} cannot be opened".format(_file))
             if data:
