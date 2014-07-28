@@ -5,9 +5,12 @@ import sys
 from setuptools import setup
 
 
+def parse_reqs():
+    path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'requirements.txt')
+    return [req.rstrip('\r\n') for req in codecs.open(path, 'r').readlines()]
+
 def read(*parts):
     return codecs.open(os.path.join(os.path.abspath(os.path.dirname(__file__)), *parts), 'r').read()
-
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
@@ -26,14 +29,15 @@ The API also exports from a Data Model into one of those file formats for upload
 
 """
 # remove the toctree from sphinx index, as it breaks long_description
-parts = read("docs", "index.txt").split("split here", 2)
-long_description = (parts[0] + long_description + parts[2] +
-                    "\n\n" + read("docs", "news.txt"))
+# parts = read("docs", "index.txt").split("split here", 2)
+# long_description = (parts[0] + long_description + parts[2] +
+#                     "\n\n" + read("docs", "news.txt"))
 
 setup(name="towerbooks",
       version=find_version('towerbooks', '__init__.py'),
       description="towerbooks imports/exports docx,odt,rtf into/from an ORM Data Model",
       long_description=long_description,
+      install_requires=parse_reqs(),
       classifiers=[
         'Development Status :: 1 - Development',
         'Intended Audience :: Developers',
