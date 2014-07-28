@@ -71,16 +71,17 @@ class TestParser(unittest.TestCase):
 
     def test_parser_with_invalid_file_path(self, *args, **kwargs):
         parser = self.parser_class()
-        self.assertRaises(exceptions.InvalidFile, parser.parse, './README.mds')
+        parser.parse('./README.mds')
+        self.assertRaises(exceptions.InvalidFile, list, parser.content)
 
     def test_parser_with_valid_file_paths(self, *args, **kwargs):
         parser = self.parser_class()
         self.path = os.path.join(self.examples_dir, 'README.txt')
         parser.parse(self.path)
-        self.assertEqual(self.readme_content, parser.content)
+        self.assertEqual(self.readme_content, ''.join(list(parser.content)))
 
     def test_parser_with_valid_file_objects(self, *args, **kwargs):
         parser = self.parser_class()
-        with open(os.path.join(self.examples_dir, 'README.txt'), 'r') as _file:
+        with open(os.path.join(self.examples_dir, 'README.txt'), 'rb') as _file:
             parser.parse(_file)
-            self.assertEqual(self.readme_content, parser.content)
+            self.assertEqual(self.readme_content, ''.join(list(parser.content)))

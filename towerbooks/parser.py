@@ -1,14 +1,62 @@
+from __future__ import with_statement
 import importlib
+import re
 
 from . import exceptions
 from . import models
 
-class BookParser(object):
+class Node(list):
+    def __init__(self, parent=None):
+        self.parent = parent
+
+class NestedParser(object):
+    """
+        As found on the StackOverflow.com question @
+        http://stackoverflow.com/questions/1099178/matching-nested-structures-with-regular-expressions-in-python
+
+        Nested structures can not be matched with Python regex alone, but it is remarkably easy to build a
+        basic parser (which can handle nested structures) using re.Scanner
+
+        By default NestedParser matches nested parentheses. You can pass other regex to match other nested
+        patterns, such as brackets, []
+
+
+    """
+    def __init__(self, left='\(', right='\)', *args, **kwargs):
+        # self.scanner = re.Scanner([
+        #     (left, self.left),
+        #     (right, self.right),
+        #     (r"\s+", None),
+        #     (".+?(?=(%s|%s|$))" % (right, left), self.other),
+        # ])
+        # self.result = Node()
+        # self.current = self.result
+        pass
+
+    def _parse(self, content):
+        self.scanner.scan(content)
+        return self.result
+
+    def left(self, scanner, token):
+        new = Node(self.current)
+        self.current.append(new)
+        self.current = new
+
+    def right(self, scanner, token):
+        self.current = self.current.parent
+
+    def other(self, scanner, token):
+        self.current.append(token.strip())
+
+class BookParser(NestedParser):
     """
         A BookParser object will parse a list of files
         and return an ORM style Data Model as 
         directed through the contructor arguments
     """
+    #FILE object buffer size for larger files
+    BUFFER_SIZE = 1024
+
     def __init__(self, *args, **kwargs):
         if kwargs.get('models', None):
             _d = kwargs['models']
@@ -40,14 +88,18 @@ class BookParser(object):
         self._validate_class(_dict['chapter'], "chapter_model")
 
     def _read_file(self, _file):
-        try:
-            return _file.read().replace('\r\n','')
-        except AttributeError as ae1:
+        while True:
             try:
-                with open(_file, 'r') as __file:
-                    return __file.read().replace('\r\n', '')
-            except IOError as io1:
-                raise exceptions.InvalidFile("The file {} cannot be opened".format(_file))
+                data = _file.read(self.BUFFER_SIZE)
+            except AttributeError as ae1:
+                try:
+                    with open(_file, 'rb') as f:
+                        data = f.read(self.BUFFER_SIZE)
+                except IOError as io1:
+                    raise exceptions.InvalidFile("The file {} cannot be opened".format(_file))
+            if data:
+                yield data
+            break
 
     def parse(self, _file, *args, **kwargs):
         self.content = self._read_file(_file)
