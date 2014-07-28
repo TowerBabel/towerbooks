@@ -5,10 +5,10 @@ from towerbooks import BookParser
 from towerbooks import models
 from towerbooks import exceptions
 
-class BookClass(object):
+class BookTestClass(object):
     pass
 
-class ChapterClass(object):
+class ChapterTestClass(object):
     pass
 
 class TestParser(unittest.TestCase):
@@ -25,26 +25,26 @@ class TestParser(unittest.TestCase):
     def test_contructor_with_valid_orm_args(self, *args, **kwargs):
         parser = self.parser_class(**dict(
                                 models=dict(
-                                        book='tests.parser.test_parser.BookClass',
-                                        chapter='tests.parser.test_parser.ChapterClass',)
+                                        book='tests.parser.test_parser.BookTestClass',
+                                        chapter='tests.parser.test_parser.ChapterTestClass',)
                                 )
                             )
-        self.assertTrue(parser.book_model is BookClass)
-        self.assertTrue(parser.chapter_model is ChapterClass)
+        self.assertTrue(parser.book_model is BookTestClass)
+        self.assertTrue(parser.chapter_model is ChapterTestClass)
 
     def test_contructor_with_invalid_orm_book_module(self, *args, **kwargs):
         parser_args = dict(
                         models=dict(
-                            book='tests.parser.test_par.BookClass',
-                            chapter='tests.parser.test_parser.ChapterClass',)
+                            book='tests.parser.test_par.BookTestClass',
+                            chapter='tests.parser.test_parser.ChapterTestClass',)
                         )
         self.assertRaises(exceptions.InvalidOrmModule, BookParser.__init__, self.parser_class(), **parser_args)
 
     def test_constructor_with_invalid_orm_chapter_module(self, *args, **kwargs):
         parser_args = dict(
                         models=dict(
-                            book='tests.parser.test_parser.BookClass',
-                            chapter='tests.test_pars.ChapterClass',)
+                            book='tests.parser.test_parser.BookTestClass',
+                            chapter='tests.test_pars.ChapterTestClass',)
                         )
         self.assertRaises(exceptions.InvalidOrmModule, BookParser.__init__, self.parser_class(), **parser_args)
 
@@ -59,7 +59,7 @@ class TestParser(unittest.TestCase):
     def test_constructor_with_invalid_orm_chapter_class(self, *args, **kwargs):
         parser_args = dict(
                         models=dict(
-                            book='tests.parser.test_parser.BookClass',
+                            book='tests.parser.test_parser.BookTestClass',
                             chapter='tests.parser.test_parser.ChapterClazz',)
                         )
         self.assertRaises(exceptions.InvalidOrmClass, BookParser.__init__, self.parser_class(), **parser_args)
